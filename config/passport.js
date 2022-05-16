@@ -1,7 +1,17 @@
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const mongoose = require("mongoose");
-const User = require("C:\\Users\\eng-m\\Desktop\\NodoJs\\Project\\storybook\\models\\User.js");
+const User = require("..\\models\\User");
+const dotenv = require("dotenv"); // has our config varabiles
 
+
+dotenv.config({
+	path: "..\\config\\config.env",
+});
+
+
+console.log(process.env.GOOGLE_CLIENT_ID)
+
+// Google Stragtegy logic
 module.exports = function (passport) {
 	passport.use(
 		new GoogleStrategy(

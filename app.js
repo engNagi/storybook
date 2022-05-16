@@ -6,8 +6,7 @@ const exphbs = require("express-handlebars");
 const session = require("express-session");
 const passport = require("passport");
 
-
-const connectDB = require("C:\\Users\\eng-m\\Desktop\\NodoJs\\Project\\storybook\\config\\db.js");
+const connectDB = require(".\\config\\db.js");
 
 //load config file
 dotenv.config({
@@ -15,7 +14,7 @@ dotenv.config({
 });
 
 //passport configure
-require("C:\\Users\\eng-m\\Desktop\\NodoJs\\Project\\storybook\\config\\passport.js")(
+require(".\\config\\passport")(
 	passport
 );
 
@@ -61,10 +60,18 @@ app.use(express.static(path.join(__dirname, "public")));
 //Routes
 app.use(
 	"/",
-	require("C:\\Users\\eng-m\\Desktop\\NodoJs\\Project\\storybook\\routes\\index.js")
+	require(".\\routes\\index")
 );
+app.use(
+	"/auth",
+	require(".\\routes\\auth")
+);
+
+
 //process.evn.PORT => to use any PORT variable in the config.env file other wise use the port xxxxx
 const PORT = process.env.PORT || 3000;
+
+console.log(process.env.PORT)
 
 //listen to request  on the definded port
 app.listen(
