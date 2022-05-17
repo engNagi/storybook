@@ -2,10 +2,11 @@ const express = require("express"); // backend Framework
 const dotenv = require("dotenv"); // has our config varabiles
 const morgan = require("morgan"); // morgan for login//shows any request to the page in the console
 const path = require("path");
+const mongoose = require("mongoose");
 const exphbs = require("express-handlebars");
 const session = require("express-session");
 const passport = require("passport");
-
+const MongoStore = require("connect-mongo");
 const connectDB = require(".\\config\\db.js");
 
 //load config file
@@ -14,9 +15,7 @@ dotenv.config({
 });
 
 //passport configure
-require(".\\config\\passport")(
-	passport
-);
+require(".\\config\\passport")(passport);
 
 // import our DB file
 
@@ -35,22 +34,22 @@ if (process.env.NODE_ENV === "development") {
 app.engine(".hbs", exphbs.engine({ defaultLayout: "main", extname: ".hbs" }));
 app.set("view engine", ".hbs");
 
-
 //Express-session middleware setting
 app.use(
 	session({
 		secret: "keyboard cat",
 		resave: false,
-		saveUninitialized: true,
+		saveUninitialized: false,
+		store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
 	})
 );
-console.log("Express-session middleware setting")
+console.log("Express-session middleware setting");
 
 // Passport Middleware
 app.use(passport.initialize());
 app.use(passport.session());
 
-console.log("Passport Middleware")
+console.log("Passport Middleware");
 
 //static folder
 //define a static folder to be use by the app object when static data like images, emojis, etc.../ style css/ frontend java script
@@ -58,20 +57,15 @@ console.log("Passport Middleware")
 app.use(express.static(path.join(__dirname, "public")));
 
 //Routes
-app.use(
-	"/",
-	require(".\\routes\\index")
-);
-app.use(
-	"/auth",
-	require(".\\routes\\auth")
-);
+app.use("/", require(".\\routes\\index"));
+app.use("/auth", require(".\\routes\\auth"));
+app.use("/stories", require(".\\routes\\stories"));
 
 
 //process.evn.PORT => to use any PORT variable in the config.env file other wise use the port xxxxx
 const PORT = process.env.PORT || 3000;
 
-console.log(process.env.PORT)
+console.log(process.env.PORT);
 
 //listen to request  on the definded port
 app.listen(
