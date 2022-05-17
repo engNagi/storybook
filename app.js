@@ -25,8 +25,8 @@ connectDB();
 const app = express();
 
 // Body parser
-app.use(express.urlencoded({extended: false}))
-app.use(express.json())
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 //logging using mmorgan dev package
 if (process.env.NODE_ENV === "development") {
@@ -34,12 +34,18 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Handlebars
-const { formatDate } =require("./helpers/hbs") 
-
+const { formatDate, truncate,  stripTags} = require("./helpers/hbs");
 
 //handlers
 // setting handle bar our templating engine and define a shorter file extension
-app.engine(".hbs", exphbs.engine({ helpers: {formatDate}, defaultLayout: "main", extname: ".hbs" }));
+app.engine(
+	".hbs",
+	exphbs.engine({
+		helpers: { formatDate, truncate, stripTags },
+		defaultLayout: "main",
+		extname: ".hbs",
+	})
+);
 app.set("view engine", ".hbs");
 
 //Express-session middleware setting
@@ -68,7 +74,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", require(".\\routes\\index"));
 app.use("/auth", require(".\\routes\\auth"));
 app.use("/stories", require(".\\routes\\stories"));
-
 
 //process.evn.PORT => to use any PORT variable in the config.env file other wise use the port xxxxx
 const PORT = process.env.PORT || 3000;
