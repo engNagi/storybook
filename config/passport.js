@@ -3,13 +3,11 @@ const mongoose = require("mongoose");
 const User = require("..\\models\\User");
 const dotenv = require("dotenv"); // has our config varabiles
 
-
 dotenv.config({
 	path: "..\\config\\config.env",
 });
 
-
-console.log(process.env.GOOGLE_CLIENT_ID)
+console.log(process.env.GOOGLE_CLIENT_ID);
 
 // Google Stragtegy logic
 module.exports = function (passport) {
@@ -21,7 +19,25 @@ module.exports = function (passport) {
 				callbackURL: "/auth/google/callback",
 			},
 			async (accessToken, refreshToken, profile, done) => {
-				console.log(profile);
+				const newUser = {
+					googleId: profile.id,
+					displayName: profile.displayName,
+					firstName: profile.name.givenName,
+					lastName: profile.name.familyName,
+					image: profile.photos[0].value,
+				};
+				try {
+					let user = await User.findOne({ googleId: profile.id });
+
+					if (user) {
+						done(null, user);
+					} else {
+						user = await User.create(newUser);
+						done(null, user);
+					}
+				} catch (err) {
+					console.error(err);
+				}
 			}
 		)
 	);

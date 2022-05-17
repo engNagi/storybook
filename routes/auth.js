@@ -1,5 +1,6 @@
 // for home high level pages homepage or dashboard
 const express = require("express");
+const res = require("express/lib/response");
 const passport = require("passport");
 const router = express.Router();
 
@@ -17,5 +18,13 @@ router.get(
 		res.redirect("/dashboard");
 	}
 );
+
+//@desc logout user
+//@Route /auth/logout
+router.get("/logout", (req, res) => {
+	req.logout()
+	res.redirect("/")
+	
+})
 
 module.exports = router;
