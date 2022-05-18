@@ -9,8 +9,15 @@ p {
 }
 
 
-label {
-  display: block;
+.fa-small {
+  font-size: 16px !important;
+}
+
+.btn-float {
   float: left;
-  padding-top: 2px; /*This needs to be modified to fit */
+  margin-right: 10px;
+}
+
+.img-small{
+  width: 180 px;
 }

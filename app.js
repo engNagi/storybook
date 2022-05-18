@@ -4,6 +4,9 @@ const morgan = require("morgan"); // morgan for login//shows any request to the 
 const path = require("path");
 const mongoose = require("mongoose");
 const exphbs = require("express-handlebars");
+// needed to be able to send a put request to the DB,
+//where the put method is not avaliable like editing the story page where only res, and req function are avaliable
+const methodOverride = require("method-override");
 const session = require("express-session");
 const passport = require("passport");
 const MongoStore = require("connect-mongo");
@@ -28,20 +31,38 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// Method override
+app.use(
+	methodOverride(function (req, res) {
+		if (req.body && typeof req.body === "object" && "_method" in req.body) {
+			// look in urlencoded POST bodies and delete it
+			let method = req.body._method;
+			delete req.body._method;
+			return method;
+		}
+	})
+);
+
 //logging using mmorgan dev package
 if (process.env.NODE_ENV === "development") {
 	app.use(morgan("dev")); // telling our appobject to use the morgan middle layer for consle logging
 }
 
 // Handlebars
-const { formatDate, truncate,  stripTags} = require("./helpers/hbs");
+const {
+	formatDate,
+	truncate,
+	stripTags,
+	editIcon,
+	select,
+} = require("./helpers/hbs");
 
 //handlers
 // setting handle bar our templating engine and define a shorter file extension
 app.engine(
 	".hbs",
 	exphbs.engine({
-		helpers: { formatDate, truncate, stripTags },
+		helpers: { formatDate, truncate, stripTags, editIcon, select },
 		defaultLayout: "main",
 		extname: ".hbs",
 	})
@@ -64,6 +85,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 console.log("Passport Middleware");
+
+//set global variable
+app.use(function (req, res, next) {
+	res.locals.user = req.user || null;
+	next();
+});
 
 //static folder
 //define a static folder to be use by the app object when static data like images, emojis, etc.../ style css/ frontend java script
